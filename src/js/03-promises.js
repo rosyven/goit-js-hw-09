@@ -17,12 +17,17 @@ function createPromise(position, delay) {
   });
 }
 
-form.addEventListener('click', function (event) {
+form.addEventListener('submit', function (event) {
   event.preventDefault();
 
   const delay = Number(inputDelay.value);
   const step = Number(inputStep.value);
   const amount = Number(inputAmount.value);
+
+  if (step < 0 || delay < 0 || amount <= 0) {
+    alert('Values must be greater than 1');
+    return;
+  }
 
   for (let i = 1; i <= amount; i++) {
     const currentDelay = delay + (i - 1) * step;

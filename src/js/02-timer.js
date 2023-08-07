@@ -1,9 +1,12 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
-const btn = document.querySelector('button');
+const btnStart = document.querySelector('[data-start]');
+const btnReset = document.querySelector('[data-reset]');
 const input = document.querySelector('#datetime-picker');
-btn.disabled = true;
+btnStart.disabled = true;
+btnReset.disabled = true;
+let selectedDate;
 
 function addLeadingZero(value) {
   return value.toString().padStart(2, '0');
@@ -19,7 +22,10 @@ const options = {
     if (selectedDates[0] <= new Date()) {
       window.alert('Please choose a date in the future');
     } else {
-      btn.disabled = false;
+      selectedDate = selectedDates[0];
+      btnStart.disabled = false;
+      btnReset.disabled = false;
+      input.disabled = true;
     }
   },
 };
@@ -39,10 +45,11 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 
-btn.addEventListener('click', function () {
-  const selectedDate = flatpickr.parseDate(input.value, 'Y-m-d H:i');
+let timerId;
 
-  const timerlId = setInterval(() => {
+btnStart.addEventListener('click', function () {
+  btnStart.disabled = true;
+  timerId = setInterval(() => {
     const timeDifference = selectedDate - new Date();
 
     if (timeDifference >= 0) {
@@ -56,7 +63,22 @@ btn.addEventListener('click', function () {
       document.querySelector('span[data-seconds]').textContent =
         addLeadingZero(seconds);
     } else {
-      clearInterval(intervalId);
+      clearInterval(timerId);
+      btnStart.disabled = false;
+      btnReset.disabled = false;
+      input.disabled = false;
     }
   }, 1000);
+});
+
+btnReset.addEventListener('click', function () {
+  clearInterval(timerId);
+  input.value = '';
+  document.querySelector('span[data-days]').textContent = '00';
+  document.querySelector('span[data-hours]').textContent = '00';
+  document.querySelector('span[data-minutes]').textContent = '00';
+  document.querySelector('span[data-seconds]').textContent = '00';
+  btnStart.disabled = true;
+  btnReset.disabled = true;
+  input.disabled = false;
 });
